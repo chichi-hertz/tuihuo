@@ -18,7 +18,7 @@
 
 ## 🚀 如何使用
 
-**在线体验地址**：👉 [https://chichi-hertz.github.io/tuihuo/](https://chichi-hertz.github.io/tuihuo/) 👈
+**在线体验地址**：👉 [在线体验地址](https://chichi-hertz.github.io/tuihuo/) 👈
 
 您也可以选择以下方式自行使用或部署：
 
@@ -49,4 +49,4 @@
 
 ## 📄 协议
 
-本项目基于 MIT License 开源发布，您可以自由修改和定制界面样式，也可用于个人或商业用途。
+本项目基于 MIT License 开源发布，您可以自由修改和定制界面样式，不可用于商业用途。
