@@ -94,7 +94,9 @@
                 align-items: center;
                 padding: 10px;
             }
-            .editor-panel, .phone-mockup {
+
+            .editor-panel,
+            .phone-mockup {
                 width: 100%;
                 max-width: 100%;
             }
@@ -106,7 +108,7 @@
             display: block;
             background-color: var(--bg-color);
         }
-        
+
         body.fullscreen-mode .editor-panel {
             display: none !important;
         }
@@ -126,7 +128,7 @@
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
@@ -139,6 +141,7 @@
             white-space: pre-wrap;
             line-height: 1.5;
         }
+
         .toast.show {
             opacity: 1;
         }
@@ -434,11 +437,12 @@
 
     <div class="editor-panel">
         <h3>修改内容</h3>
-        
+
         <div class="form-group" style="background: #f0f8ff; padding: 10px; border-radius: 6px;">
-            <label style="color: #0066cc;">智能识别 (支持粘贴任意排版格式)</label>
+            <label style="color: #0066cc;">智能识别</label>
             <textarea id="smartInput" placeholder="例如：孙伟丽，18621307157，北京市海淀区解放街59号阳光庭12栋..."></textarea>
-            <button class="btn" style="margin-top: 5px; background: #0066cc;" onclick="parseSmartAddress()">一键识别并拆分</button>
+            <button class="btn" style="margin-top: 5px; background: #0066cc;"
+                onclick="parseSmartAddress()">一键识别并拆分</button>
         </div>
         <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
 
@@ -454,8 +458,9 @@
             <label>联系电话</label>
             <input type="text" id="inputPhone" value="18621307157">
         </div>
-        <button class="btn" style="background: #28a745;" onclick="enterFullscreen()">进入全屏预览 (手机端强烈推荐)</button>
-        <button class="btn" style="background: #6c757d; margin-top: 10px; font-size: 14px;" onclick="generateScreenshot()">下载截图文件 (电脑端使用)</button>
+        <button class="btn" style="background: #28a745;" onclick="enterFullscreen()">生成并进入全屏预览</button>
+        <button class="btn" style="background: #6c757d; margin-top: 10px; font-size: 14px;"
+            onclick="generateScreenshot()">下载截图文件(电脑端)</button>
     </div>
 
     <div class="phone-mockup" id="capture">
@@ -501,7 +506,7 @@
                 <div class="address-label">商家地址</div>
                 <div class="address-content">
                     <div class="address-text" id="displayAddress">浙江省杭州市滨江区
-                        西兴街道聚业路26<br>号金绣国际科技中心A栋303<br>菌菌小洛，13960830996</div>
+                        西兴街道聚业路77<br>号金绣国际科技中心A栋303<br>小王，19960830996</div>
                     <div class="copy-btn">⎘ 复制地址</div>
                 </div>
             </div>
@@ -553,25 +558,25 @@
         function parseSmartAddress() {
             const raw = document.getElementById('smartInput').value;
             if (!raw) return;
-            
+
             let text = raw;
             // 匹配手机号
             let phoneMatch = text.match(/(?:86)?\b(1[3-9]\d{9})\b/);
             let phone = phoneMatch ? phoneMatch[1] : "";
-            
+
             if (phone) {
                 text = text.replace(phone, ' ');
             }
-            
+
             // 移除常见标签
             text = text.replace(/收货人[:：]?|姓名[:：]?|电话[:：]?|手机[:：]?|联系方式[:：]?|地址[:：]?|所在地区[:：]?|详细地址[:：]?/g, ' ');
 
             // 按标点和空白分割
             let tokens = text.split(/[\s,，。;；\n\r]+/).filter(t => t.trim() !== '');
-            
+
             let name = "";
             let addressParts = [];
-            
+
             // 简单的模式识别：短字符串可能是名字，包含数字或省市区的肯定是地址
             for (let token of tokens) {
                 if (token.match(/[0-9]/) || token.match(/(省|市|区|县|镇|乡|村|街道|路|弄|号|栋|单元|室)/)) {
@@ -582,11 +587,11 @@
                     addressParts.push(token);
                 }
             }
-            
+
             document.getElementById('inputAddress').value = addressParts.join('');
             document.getElementById('inputName').value = name;
             document.getElementById('inputPhone').value = phone;
-            
+
             updateText();
         }
 
@@ -624,7 +629,7 @@
         // Fullscreen Logic
         function enterFullscreen() {
             document.body.classList.add('fullscreen-mode');
-            history.pushState({fullscreen: true}, "");
+            history.pushState({ fullscreen: true }, "");
             showToast("已进入全屏纯净模式\n👉 请直接使用手机系统快捷键截屏 👈\n(按返回键或双击屏幕退出全屏)");
         }
 
@@ -632,14 +637,14 @@
             document.body.classList.remove('fullscreen-mode');
         }
 
-        window.addEventListener('popstate', function(e) {
+        window.addEventListener('popstate', function (e) {
             if (!history.state || !history.state.fullscreen) {
                 exitFullscreen();
             }
         });
 
         let lastTap = 0;
-        document.getElementById('capture').addEventListener('click', function(e) {
+        document.getElementById('capture').addEventListener('click', function (e) {
             if (document.body.classList.contains('fullscreen-mode')) {
                 let currentTime = new Date().getTime();
                 let tapLength = currentTime - lastTap;
@@ -656,8 +661,8 @@
             toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => { toast.classList.add('show'); }, 10);
-            setTimeout(() => { 
-                toast.classList.remove('show'); 
+            setTimeout(() => {
+                toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
