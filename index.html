@@ -560,35 +560,55 @@
             if (!raw) return;
 
             let text = raw;
-            // 匹配手机号
-            let phoneMatch = text.match(/(?:86)?\b(1[3-9]\d{9})\b/);
-            let phone = phoneMatch ? phoneMatch[1] : "";
-
-            if (phone) {
-                text = text.replace(phone, ' ');
-            }
-
-            // 移除常见标签
-            text = text.replace(/收货人[:：]?|姓名[:：]?|电话[:：]?|手机[:：]?|联系方式[:：]?|地址[:：]?|所在地区[:：]?|详细地址[:：]?/g, ' ');
-
-            // 按标点和空白分割
-            let tokens = text.split(/[\s,，。;；\n\r]+/).filter(t => t.trim() !== '');
 
             let name = "";
-            let addressParts = [];
+            let phone = "";
+            let address = "";
 
-            // 简单的模式识别：短字符串可能是名字，包含数字或省市区的肯定是地址
+            const nameMatch = text.match(/(?:收货人|收件人|联系人|姓名)[:：]\s*([^\n\r]+)/i);
+            if (nameMatch) {
+                name = nameMatch[1].trim();
+                text = text.replace(nameMatch[0], ' ');
+            }
+
+            const phoneMatch = text.match(/(?:手机号码|手机|电话|联系方式)[:：]?\s*(1[3-9]\d{9})/);
+            if (phoneMatch) {
+                phone = phoneMatch[1];
+                text = text.replace(phoneMatch[0], ' ');
+            } else {
+                const fallbackPhoneMatch = text.match(/(?:86)?\b(1[3-9]\d{9})\b/);
+                if (fallbackPhoneMatch) {
+                    phone = fallbackPhoneMatch[1];
+                    text = text.replace(fallbackPhoneMatch[0], ' ');
+                }
+            }
+
+            const addressMatch = text.match(/(?:地址信息|地址|详细地址|所在地区)[:：]?\s*([\s\S]+)/i);
+            if (addressMatch) {
+                address = addressMatch[1].trim();
+                text = text.replace(addressMatch[0], ' ');
+            }
+
+            text = text.replace(/(?:收货人|收件人|联系人|姓名)[:：]?/g, ' ');
+            text = text.replace(/(?:手机号码|手机|电话|联系方式)[:：]?/g, ' ');
+            text = text.replace(/(?:地址信息|地址|详细地址|所在地区)[:：]?/g, ' ');
+
+            const tokens = text.split(/[\s,，。;；\n\r]+/).filter(t => t.trim() !== '');
+
+            let addressParts = [];
             for (let token of tokens) {
-                if (token.match(/[0-9]/) || token.match(/(省|市|区|县|镇|乡|村|街道|路|弄|号|栋|单元|室)/)) {
-                    addressParts.push(token);
-                } else if (token.length >= 2 && token.length <= 5 && !name) {
+                if (!name && token.length >= 2 && token.length <= 5 && !token.match(/[0-9]/) && !token.match(/(省|市|区|县|镇|乡|村|街道|路|弄|号|栋|单元|室)/)) {
                     name = token;
                 } else {
                     addressParts.push(token);
                 }
             }
 
-            document.getElementById('inputAddress').value = addressParts.join('');
+            if (!address) {
+                address = addressParts.join('');
+            }
+
+            document.getElementById('inputAddress').value = address;
             document.getElementById('inputName').value = name;
             document.getElementById('inputPhone').value = phone;
 
@@ -664,7 +684,7 @@
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 500);
         }
     </script>
 </body>
