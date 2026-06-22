@@ -87,6 +87,62 @@
             flex-direction: column;
         }
 
+        /* Mobile Responsive & Fullscreen Mode */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+            .editor-panel, .phone-mockup {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        body.fullscreen-mode {
+            padding: 0 !important;
+            margin: 0 !important;
+            display: block;
+            background-color: var(--bg-color);
+        }
+        
+        body.fullscreen-mode .editor-panel {
+            display: none !important;
+        }
+
+        body.fullscreen-mode .phone-mockup {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            box-shadow: none;
+            border-radius: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .toast {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-align: center;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
         /* Top Header Area */
         .top-section {
             background: #fff;
@@ -398,7 +454,8 @@
             <label>联系电话</label>
             <input type="text" id="inputPhone" value="18621307157">
         </div>
-        <button class="btn" onclick="generateScreenshot()">下载截图</button>
+        <button class="btn" style="background: #28a745;" onclick="enterFullscreen()">进入全屏预览 (手机端强烈推荐)</button>
+        <button class="btn" style="background: #6c757d; margin-top: 10px; font-size: 14px;" onclick="generateScreenshot()">下载截图文件 (电脑端使用)</button>
     </div>
 
     <div class="phone-mockup" id="capture">
@@ -562,6 +619,47 @@
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
             });
+        }
+
+        // Fullscreen Logic
+        function enterFullscreen() {
+            document.body.classList.add('fullscreen-mode');
+            history.pushState({fullscreen: true}, "");
+            showToast("已进入全屏纯净模式\n👉 请直接使用手机系统快捷键截屏 👈\n(按返回键或双击屏幕退出全屏)");
+        }
+
+        function exitFullscreen() {
+            document.body.classList.remove('fullscreen-mode');
+        }
+
+        window.addEventListener('popstate', function(e) {
+            if (!history.state || !history.state.fullscreen) {
+                exitFullscreen();
+            }
+        });
+
+        let lastTap = 0;
+        document.getElementById('capture').addEventListener('click', function(e) {
+            if (document.body.classList.contains('fullscreen-mode')) {
+                let currentTime = new Date().getTime();
+                let tapLength = currentTime - lastTap;
+                if (tapLength < 500 && tapLength > 0) {
+                    history.back();
+                }
+                lastTap = currentTime;
+            }
+        });
+
+        function showToast(msg) {
+            let toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.classList.add('show'); }, 10);
+            setTimeout(() => { 
+                toast.classList.remove('show'); 
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
     </script>
 </body>
