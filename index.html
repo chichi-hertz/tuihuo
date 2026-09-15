@@ -505,8 +505,7 @@
             <div class="address-section">
                 <div class="address-label">商家地址</div>
                 <div class="address-content">
-                    <div class="address-text" id="displayAddress">浙江省杭州市滨江区
-                        西兴街道聚业路77<br>号金绣国际科技中心A栋303<br>小王，19960830996</div>
+                    <div class="address-text" id="displayAddress">孙伟丽，18621307157<br>北京市海淀区解放街59号<br>阳光庭12栋6单元2501室</div>
                     <div class="copy-btn">⎘ 复制地址</div>
                 </div>
             </div>
@@ -620,9 +619,13 @@
             const name = document.getElementById('inputName').value;
             const phone = document.getElementById('inputPhone').value;
 
-            let formatted = addr.replace(/\n/g, '<br>');
-            if (name || phone) {
-                formatted += '<br>' + name + '，' + phone;
+            // 姓名和联系电话在上，详细地址在下
+            const addrHtml = addr.replace(/\n/g, '<br>');
+            const contactHtml = [name, phone].filter(s => s && s.trim() !== '').join('，');
+
+            let formatted = contactHtml;
+            if (addrHtml) {
+                formatted = formatted ? formatted + '<br>' + addrHtml : addrHtml;
             }
             document.getElementById('displayAddress').innerHTML = formatted;
         }
